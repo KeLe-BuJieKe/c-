@@ -311,4 +311,48 @@ bool isPalindrome(string s)
 }
 
 
-//方法二：
+//方法二;这种方法相较于上一种方法不需要删除这一个步骤
+//时间效率会增加﻿
+class Solution
+{
+public:
+	bool isPalindrome(string s)
+	{
+		int begin = 0;
+		int end = s.size() - 1;
+		while (begin < end)
+		{
+			//1.先判断该字符是否是数字或者是字母，如果不是，则让该下标指向一个数字或者字母
+			while ((begin < end) && (!(s[end] >= '0' && s[end] <= '9')) &&
+				(!(((s[end] >= 'A' && s[end] <= 'Z')) || (s[end] >= 'a' && s[end] <= 'z'))))
+			{
+				end--;
+			}
+
+			while ((begin < end) && (!(s[begin] >= '0' && s[begin] <= '9')) &&
+				(!(((s[begin] >= 'A' && s[begin] <= 'Z')) || (s[begin] >= 'a' && s[begin] <= 'z'))))
+			{
+				begin++;
+			}
+			//2.如果该字符为大写字符，我们则把该字符改成小写字符
+			if ((s[end] >= 'A' && s[end] <= 'Z'))
+			{
+				s[end] += 32;
+			}
+
+			if ((s[begin] >= 'A' && s[begin] <= 'Z'))
+			{
+				s[begin] += 32;
+			}
+
+			//3.最后我们比较两个字符是否相同，相同就继续，不相同就返回false
+			if (s[end] != s[begin])
+			{
+				return false;
+			}
+			begin++;
+			end--;
+		}
+		return true;
+	}
+};
