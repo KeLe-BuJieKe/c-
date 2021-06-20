@@ -1,5 +1,6 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS 1
 #include<iostream>
+#include<string>
 #include<vector>
 using  namespace std;
 
@@ -356,3 +357,140 @@ public:
 		return true;
 	}
 };
+
+/*8. 反转字符串 II
+给定一个字符串 s 和一个整数 k，你需要对从字符串开头算起的每隔 2k 个字符的前 k 个字符进行反转。
+如果剩余字符少于 k 个，则将剩余字符全部反转。
+如果剩余字符小于 2k 但大于或等于 k 个，则反转前 k 个字符，其余字符保持原样。
+示例:
+输入: s = "abcdefg", k = 2
+输出: "bacdfeg"
+提示：
+该字符串只包含小写英文字母。
+给定字符串的长度和 k 在 [1, 10000] 范围内。*/
+
+class Solution
+{
+public:
+	string reverseStr(string s, int k)
+	{
+		//1.根据题意我们需要在每隔2k个字符，把前k个字符反转
+		for (int i = 0; i < s.size(); i += 2 * k)
+		{
+			//2.我们给两个下标，一个是开始位置begin，一个结束位置end
+			//结束位置等于开始的位置begin+k-1，由于我们的i的变化量是2k
+			//2k就是每隔的一个区间大小
+			int begin = i;
+			int end = begin + k - 1;
+
+			//3.这个if是为了防止剩余字符少于 k 个，则将剩余字符全部反转。
+			//由于剩余字符数量不足，若继续使用上面未修正的end下标，就会造成越界
+			//此时我们需要把结束的end下标修正一下，以防发生错误
+			if (end >= s.size())
+			{
+				end = s.size() - 1;
+			}
+
+			//4.这里我们就把我们所需要逆置的元素区间逆置
+			while (begin < end)
+			{
+				swap(s[begin], s[end]);
+				begin++;
+				end--;
+			}
+		}
+		//5.返回s
+		return s;
+	}
+};
+
+
+
+/*9.反转字符串中的单词 III
+给定一个字符串，你需要反转字符串中每个单词的字符顺序，同时仍保留空格和单词的初始顺序。
+示例：
+输入："Let's take LeetCode contest"
+输出："s'teL ekat edoCteeL tsetnoc"
+提示：
+在字符串中，每个单词由单个空格分隔，并且字符串中不会有任何额外的空格。
+链接：https://leetcode-cn.com/problems/reverse-words-in-a-string-iii/
+*/
+
+class Solution
+{
+public:
+	string reverseWords(string s)
+	{
+		for (int i = 0; i < s.size();)
+		{
+			int begin = i;
+			//1.我们要找到分隔符空格，并且改位置要小于该字符串的长度，
+			//跳出这个循环的情况有两种，1、是碰到分隔符空格
+			//                        2、是要碰到'\0'，即i=s.size这个位置，这一步可以防止越界
+			while (i < s.size() && s[i] != ' ')
+			{
+				++i;
+			}
+			int end = i - 1;
+
+			//2.我们逆置【begin，end】这个前闭后闭这个区间内的元素
+			while (begin < end)
+			{
+				swap(s[begin], s[end]);
+				begin++;
+				end--;
+			}
+
+			//3.这一步我们要跳过空格这个位置，并给下一个区间的begin赋值
+			while (i < s.size() && s[i] == ' ')
+			{
+				++i;
+			}
+		}
+		return s;
+	}
+};
+
+
+
+
+/*10.字符串最后一个单词的长度
+描述
+计算字符串最后一个单词的长度，单词以空格隔开，字符串长度小于5000。
+输入描述：
+输入一行，代表要计算的字符串，非空，长度小于5000。
+输出描述：
+输出一个整数，表示输入字符串最后一个单词的长度。
+示例1
+输入：hello nowcoder
+输出：8
+说明：最后一个单词为nowcoder，长度为8
+链接：https://www.nowcoder.com/practice/8c949ea5f36f422594b306a2300315da?tpId=37&&tqId=21224&rp=5&ru=/activity/oj&qru=/ta/huawei/question-ranking
+*/
+
+int CalWord(std::string& str)
+{
+	//思路：我们从后往前遍历，在该字符串中找到分隔符' '
+	//空格符到str.size()-1的距离即是该字符最后一个单词的长度
+	int i = str.size() - 1;
+	for (; i >= 0 && i < str.size();)
+	{
+		if (str[i] != ' ')
+		{
+			i--;
+		}
+		else
+		{
+			break;
+		}
+	}
+	return str.size() - i - 1;
+}
+
+int main()
+{
+	std::string s;
+	getline(std::cin, s);
+	std::cout << CalWord(s);
+	return 0;
+}
