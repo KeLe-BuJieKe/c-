@@ -358,6 +358,7 @@ public:
 	}
 };
 
+
 /*8. 反转字符串 II
 给定一个字符串 s 和一个整数 k，你需要对从字符串开头算起的每隔 2k 个字符的前 k 个字符进行反转。
 如果剩余字符少于 k 个，则将剩余字符全部反转。
@@ -494,3 +495,74 @@ int main()
 	std::cout << CalWord(s);
 	return 0;
 }
+
+
+/*11.字符串相加
+给定两个字符串形式的非负整数 num1 和num2 ，计算它们的和。
+提示：
+num1 和num2 的长度都小于 5100
+num1 和num2 都只包含数字 0-9
+num1 和num2 都不包含任何前导零
+你不能使用任何內建 BigInteger 库， 也不能直接将输入的字符串转换为整数形式
+链接：https://leetcode-cn.com/problems/add-strings/
+*/
+
+
+class Solution
+{
+public:
+	string addStrings(string num1, string num2)
+	{
+		//1.首先我们从后往前开始加，也就是我们所说的从低为向高位加
+		//这里的length1与length2分别记录的是num1与num2当前最后一个数字字符的下标
+		int length1 = num1.size() - 1;
+		int length2 = num2.size() - 1;
+		int carry = 0;        //进位
+		string retstr = "";   //结果字符串
+
+		//2.这里有几种情况
+		/*
+		1.当num1字符个数少于num2中的个数时，此时则表明是num2比num1多出来的部分是要与0和进位carry相加
+		同理
+		2.当num2字符个数少于num1中的个数时，此时则表明是num1比num2多出来的部分是要与0和进位carry相加
+		3.当num1与num2中数字字符都没有了，但是进位还是为1，相当于是把最后的一个进位单独尾插到目标字符串retstr中
+		*/
+		while (length1 >= 0 || length2 >= 0 || carry > 0)
+		{
+			int temp1 = length1 >= 0 ? num1[length1] - '0' : 0;
+			int temp2 = length2 >= 0 ? num2[length2] - '0' : 0;
+			int result = temp1 + temp2 + carry;
+			//如果这个结果大于9，这证明该结果是需要进位的，并且该结果要 %10
+			//此时把carry置为1
+			if (result > 9)
+			{
+				result %= 10;
+				carry = 1;
+			}
+			//如果这个结果没有大于9，则证明该结果不需要进位，此时把进位carrt置为0，result不需要修改
+			else
+			{
+				carry = 0;
+			}
+			//3.到了这里我们要把我们算好的结果要尾插到该字符串的末尾
+			//此时得到的结果与我们想要的结果是颠倒的，即下标0这个位置是最低位，下标retstr.size()-1这个位置是最高位
+			retstr.push_back(result + '0');
+			--length1;
+			--length2;
+		}
+
+		//4.最后我们把该字符串逆置
+		//可以使用reverse()库函数把该string的对象逆置
+		int begin = 0;
+		int end = retstr.size() - 1;
+		while (begin < end)
+		{
+			swap(retstr[begin], retstr[end]);
+			begin++;
+			end--;
+		}
+
+		//5.最后返回我们的目标字符串
+		return retstr;
+	}
+};
