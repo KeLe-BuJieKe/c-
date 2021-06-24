@@ -583,3 +583,44 @@ num1 和 num2 均不以零开头，除非是数字 0 本身。
 不能使用任何标准库的大数类型（比如 BigInteger）或直接将输入转换为整数来处理。
 链接：https://leetcode-cn.com/problems/multiply-strings/
 */
+
+class Solution
+{
+public:
+	string multiply(string num1, string num2)
+	{
+		//1.当num1或num2中出现0时，因为0乘任何数都为0，直接返回一个匿名对象。
+		if ((num1.size() == 1 && num1[0] == '0') || (num2.size() == 1 && num2[0] == '0'))
+		{
+			return string("0");
+		}
+		//2.创建一个动态数组，用来存储得出结果的数
+		vector<int>num(num1.size() + num2.size(), 0);
+		for (int i = num1.size() - 1; i >= 0; i--)
+		{
+			for (int j = num2.size() - 1; j >= 0; j--)
+			{
+				int mul = (num1[i] - '0') * (num2[j] - '0');
+				int sum = mul + num[i + j + 1];
+				num[i + j] += sum / 10;
+				num[i + j + 1] = sum % 10;
+			}
+		}
+
+
+		//3.将数组num转成字符串，如果最高位是0，则舍弃最高位。
+		int i = 0;
+		while (i < num.size() && num[i] == 0)
+		{
+			i++;
+		}
+		string ans;
+		while (i < num.size())
+		{
+			ans += num[i++] + '0';
+		}
+
+		//4.最后返回目标字符串
+		return ans;
+	}
+};
