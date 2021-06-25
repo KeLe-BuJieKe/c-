@@ -595,6 +595,10 @@ public:
 			return string("0");
 		}
 		//2.创建一个动态数组，用来存储得出结果的数
+		/*这里的m与n分别为该字符串的长度
+		由于num1与num2的乘积的最大长度为m+n，因此我们创建长度为m+n的数组num用来存储乘积。对于任意0<=i<=m和0<=j<n,
+		num1[i]×num2[j]的结果位与num[i+j+1],但是如果num[i+j+1]>=10,则将进位的部分加到num[i+j]。
+		*/
 		vector<int>num(num1.size() + num2.size(), 0);
 		for (int i = num1.size() - 1; i >= 0; i--)
 		{
