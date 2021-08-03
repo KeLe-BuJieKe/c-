@@ -39,8 +39,8 @@ namespace ZJ
 
 		vector(long n, const T& value = T())		//带缺省值的构造函数
 			:m_start(nullptr)
-			, m_finish(nullptr)
-			, m_endofstorage(nullptr)
+			,m_finish(nullptr)
+			,m_endofstorage(nullptr)
 		{
 			assert(n > 0);
 			reserve(n);
@@ -56,8 +56,8 @@ namespace ZJ
 
 		vector(int n, const T& value = T())		//带缺省值的构造函数
 			:m_start(nullptr)
-			, m_finish(nullptr)
-			, m_endofstorage(nullptr)
+			,m_finish(nullptr)
+			,m_endofstorage(nullptr)
 		{
 			assert(n > 0);
 			reserve(n);
