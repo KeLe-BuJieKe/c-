@@ -10,11 +10,15 @@ using namespace std;
 class Solution 
 {
 public:
+  /*思路：创建一个原数组大1的数组，其初始值全部为0
+   * 我们只需要比较我们当前位置的左边的价值加上自身的价值和上面的价值加上自身的价值那个大，该位置的最大价值就取那个
+   * 动态规划方程为dp[i][j]=max(dp[i-1][j]dp[i][j-1])+grid[i-1][j-1]
+   * */
     int maxValue(vector<vector<int>>& grid) 
     {
         size_t n=grid.size();
         size_t m=grid[0].size();
-        vector<vector<int>>dp(n+1,vector<int>(m+1,0));  //空间复杂度O（m*n） 时间复杂度 O（m*n）
+        vector<vector<int>>dp(n+1,vector<int>(m+1,0));  //空间复杂度O（（m+1）*（n+1）） 时间复杂度 O（m*n）
         for(size_t i=1;i<=n;++i)
         {
             for(size_t j=1;j<=m;++j)
