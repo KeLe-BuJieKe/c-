@@ -10,7 +10,7 @@ void GetNext(vector<int>& next,const string&sub)
     int k=0;
     int i=1;
     int sublen=sub.size();
-    while(i<sublen)
+    while(i<sublen-1)
     {
       if(k==-1||sub[i]==sub[k])
       {
