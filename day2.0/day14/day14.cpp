@@ -153,7 +153,7 @@ struct TreeNode
 */
 
 
- class Solution
+ class Solution1
  {
  public:
      // ×´Ì¬×ªÒÆ·½³Ì£º
@@ -201,8 +201,7 @@ struct TreeNode
  };
 
 int main()
-{
-    
+{    
 	system("pause");
 	return 0;
 }
