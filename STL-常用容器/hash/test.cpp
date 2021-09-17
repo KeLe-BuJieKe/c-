@@ -11,6 +11,7 @@ struct com
 	}
 };
 
+//test hashTable
 void testhastTable()
 {
 	ZJ::hashTable<int, int, com<int>> h;
@@ -33,6 +34,7 @@ void testhastTable()
 	h.clear();
 }
 
+//test map
 void testmap()
 {
 	ZJ::unordered_map<string,string>mp;
