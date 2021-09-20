@@ -1,6 +1,9 @@
 #include"hashTable.h"
 #include"myUnordered_map.h"
 #include"myUnordered_set.h"
+#include"bitmap.h"
+#include"bloomfilter.h"
+#include"InterviewQuestions.h"
 
 template<class T>
 struct com
@@ -11,7 +14,6 @@ struct com
 	}
 };
 
-//test hashTable
 void testhastTable()
 {
 	ZJ::hashTable<int, int, com<int>> h;
@@ -34,7 +36,6 @@ void testhastTable()
 	h.clear();
 }
 
-//test map
 void testmap()
 {
 	ZJ::unordered_map<string,string>mp;
@@ -76,11 +77,51 @@ void testset()
 	ZJ::unordered_set<int>s;
 	
 }
+
+void  testbitmap()
+{
+	ZJ::BitMap b(100);
+	b.set(98);
+	b.set(99);
+	b.set(9);
+	b.set(8);
+	b.set(89);
+	b.set(18);
+	b.set(28);
+	b.unset(8);
+	for (size_t i = 0; i < 100; i++)
+	{
+		printf("[%d]=%d\n", i, b.queryexist(i));
+	}
+}
+
+void testbloomfilter()
+{
+	ZJ::BloomFilter<string>b(400);
+	b.set("100");
+	b.set("200");
+	b.set("300");
+	b.set("400");
+	b.set("600");
+	b.set("700");
+
+	cout << b.queryexist("100") << endl;
+	cout << b.queryexist("200") << endl;
+	cout << b.queryexist("300") << endl;
+	cout << b.queryexist("400") << endl;
+	cout << b.queryexist("500") << endl;
+	cout << b.queryexist("600") << endl;
+	cout << b.queryexist("700") << endl;
+
+}
 int main()
 {
 	//testhastTable();
-	testmap();
+	//testmap();
 	//testset();
+	//testbitmap();
+	//testbloomfilter();
+	ZJ::testSolution1();
 	system("pause");
 	return 0;
 }
