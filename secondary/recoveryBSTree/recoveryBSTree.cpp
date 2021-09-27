@@ -30,7 +30,8 @@ class Solution
 {
 public:
   //思路：利用二叉搜索树的中序遍历是有序的性质
-  //时间复杂度O(n) 空间复杂度O(n)
+  //时间复杂度O(n) 空间复杂度O(H)
+  //H 是二叉树搜索树的深度
     void recoverTree(TreeNode* root)
     {
         stack<TreeNode*>st;
