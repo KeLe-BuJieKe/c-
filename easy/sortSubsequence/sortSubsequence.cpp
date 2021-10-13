@@ -22,6 +22,7 @@ using namespace std;
 2
 */
 
+
 int main()
 {
     int n;
