@@ -41,7 +41,7 @@ int main()
 	}
 	sort(arr.begin(), arr.end());
 	int size = groupnum;
-	long long ret = 0;
+	long long ret = 0;//防止溢出
 	int i = 3 * groupnum - 2;
 	while (size--)
 	{
