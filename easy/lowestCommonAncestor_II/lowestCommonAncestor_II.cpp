@@ -1,4 +1,5 @@
 #include<iostream>
+#include<stack>
 using namespace std;
 
 /*剑指 Offer 68 - II. 二叉树的最近公共祖先
@@ -25,7 +26,8 @@ struct TreeNode {
     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
 };
 
-class Solution 
+//时间复杂度O(n^2)
+class Solution1 
 {
 public:
     bool FindPath(TreeNode*&root,TreeNode*&subNode)
@@ -82,6 +84,67 @@ public:
     }
 };
 
+//时间复杂度O(n)
+class Solution2 
+{
+public:
+    bool FindPath(TreeNode* root, stack<TreeNode*>& path,TreeNode*findnode)
+    {
+        if(root==nullptr)
+        {
+            return false;
+        }
+        path.push(root);
+
+        if(root==findnode)
+        {
+            return  true;
+        }
+        else
+        {
+            if(FindPath(root->left,path,findnode) )
+            {
+                return true;
+            }
+            if( FindPath(root->right,path,findnode) )
+            {
+                return true;
+            }
+            path.pop();
+        }
+        return false;
+
+    }
+    //分别找到p和q的结点路径，分别用两个栈来存储路径
+    //然后在转换思路，我们这里相当于要求两个链表的公共结点
+    
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) 
+    {
+        stack<TreeNode*> Ppath;
+        stack<TreeNode*> Qpath;
+        FindPath(root,Ppath,p);
+        FindPath(root,Qpath,q);
+        int sizeQ=Qpath.size();
+        int sizeP=Ppath.size();
+        while(sizeQ>sizeP)
+        {
+            sizeQ--;
+            Qpath.pop();
+        }
+        while(sizeQ<sizeP)
+        {   
+            sizeP--;
+            Ppath.pop();
+        }
+
+        while(Ppath.top()!=Qpath.top())
+        {
+            Ppath.pop();
+            Qpath.pop();
+        }
+        return Ppath.top();
+    }
+};
 int main()
 {
 
