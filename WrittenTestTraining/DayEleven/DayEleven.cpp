@@ -221,6 +221,8 @@ D 123434
 测试样例：
 2，3
 返回:-1
+
+//方法一
 class LCA
 {
 public:
@@ -297,7 +299,26 @@ public:
     }
 };
 
-
+//方法二：
+class LCA
+{
+public:
+  int getLCA(int a,int b)
+  {
+    while(a!=b)
+    {
+      if(a>b)
+      {
+        a>=1;
+      }
+      else
+      {
+        b>=1;
+      }
+    }
+    return a;
+  }
+};
 
 12.标题：求最大连续bit数 | 时间限制：1秒 | 内存限制：32768K | 语言限制： 不限
 【求最大连续bit数】
@@ -315,6 +336,7 @@ public:
 输出
 2
 
+方法一
 #include<iostream>
 #include<vector>
 #include<algorithm>
@@ -352,4 +374,7 @@ int main()
     }
     return 0;
 }
+
+
+
 */
