@@ -155,7 +155,7 @@ D 200，50
 1024，19，2，6
 返回：1100
 
-
+//方法一：
 class BinInsert
 {
 public:
@@ -188,6 +188,28 @@ public:
     }
 };
 
+//方法二：
+class BinInsert {
+public:
+    int binInsert(int n, int m, int j, int i) {
+        for(int k=0;k<=i-j;++k)
+        {
+          //先将m的每一位的二进制出来在左移到要 | 上的位置
+            n|=((m>>k)&1)<<(j+k);
+        }
+        return n;
+    }
+};
+
+
+//方法三：
+class BinInsert {
+public:
+    int binInsert(int n, int m, int j, int i) {
+        return n|(m<<j);
+    }
+};
+
 
 标题：查找组成一个偶数最接近的两个素数 | 时间限制：1秒 | 内存限制：32768K | 语言限制： 不限
 【查找组成一个偶数最接近的两个素数】
@@ -203,6 +225,8 @@ public:
 输出
 7
 13
+
+//方法一：
 #include<iostream>
 using namespace std;
 bool isprime(int num)
@@ -242,6 +266,45 @@ int main()
         }
         cout << x1 << endl;
         cout << x2 << endl
+    }
+    return 0;
+}
+
+
+
+//方法二：
+#include<iostream>
+#include<math.h>
+using namespace std;
+
+bool isPrime(int num)
+{
+    for(int i=2;i<=sqrt(num);++i)
+    {
+        if(num%i==0)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+int main()
+{
+    int num;
+    //从这个偶数的中间部分来开始查找，一个数一直减1，那么组成这个偶数的另外一个数
+    //num这个数就会有i和num-i组成，然后i一直--，从中间向两边扩展
+    //那么第一个找到的两个素数就是我们要找的两个最近的素数
+    while(cin>>num)
+    {
+        for(int i=num/2;i>0;--i)
+        {
+            if(isPrime(i)&&isPrime(num-i))
+            {
+                cout<<i<<endl<<num-i<<endl;
+                break;
+            }
+        }
     }
     return 0;
 }
