@@ -7,7 +7,7 @@ namespace ZJ
 	class map
 	{
 	public:
-		class MapKeyOfCompare
+		class MapKeyOfCompare    //ÄÚ²¿Àà
 		{
 		public:
 			const K& operator()(const pair<K,V>&kv)
@@ -16,6 +16,7 @@ namespace ZJ
 			}
 		};
 		typedef class RBTree<K, pair<K,V>, MapKeyOfCompare>::iterator iterator;
+		typedef class RBTree<K, pair<K, V>, MapKeyOfCompare>::reverse_iterator reverse_iterator;
 
 		iterator begin()
 		{
@@ -25,6 +26,16 @@ namespace ZJ
 		{
 			return m_tree.end();
 		}
+
+		reverse_iterator rbegin()
+		{
+			return m_tree.rbegin();
+		}
+		reverse_iterator rend()
+		{
+			return m_tree.rend();
+		}
+
 		pair<iterator,bool> insert(const pair<K,V>&kv)
 		{
 			return m_tree.insert(kv);

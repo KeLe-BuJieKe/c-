@@ -31,6 +31,10 @@ class Treeiterator
 {
 public:
 	typedef RBTreeNode<T>node;
+	typedef Ref reference;
+	typedef Ptr pointer;
+public:
+
 
 	Treeiterator(node* Pnode):m_node(Pnode)
 	{}
@@ -70,18 +74,91 @@ public:
 		return *this;
 	}
 
-	//node* operator--()
-	//{
-	//	return *this;
-	//}
+	Treeiterator<T, Ref, Ptr> operator--()
+	{
+		if (m_node->m_left != nullptr)
+		{
+			node* subright = m_node->m_left;
+			while (subright->m_right != nullptr)
+			{
+				subright = subright->m_right;
+			}
+			m_node = subright;
+		}
+		else
+		{
+			node* cur = m_node;
+			node* parent = cur->m_parent;
+			while (parent != nullptr && parent->m_left == cur)
+			{
+				cur = parent;
+				parent = parent->m_parent;
+			}
+			m_node = parent;
+		}
+		return *this;
+	}
 
-	bool operator!=(const Treeiterator& obj)
+	bool operator!=(const Treeiterator<T,Ref,Ptr>& obj)
 	{
 		return m_node != obj.m_node;
+	}
+
+	bool operator==(const Treeiterator<T, Ref, Ptr>& obj)
+	{
+		return m_node == obj.m_node;
 	}
 private:
 	node* m_node;
 
+};
+
+//迭代器适配器
+template<class iterator>
+class reverseIterator
+{
+public:
+	typedef typename iterator::reference Ref;
+	typedef typename iterator::pointer Ptr;
+public:
+	
+	reverseIterator(iterator it) :m_it(it)
+	{}
+	
+	Ref operator *()
+	{
+		return *m_it;
+	}
+
+	Ptr operator->()
+	{
+		return m_it.operator->();
+	}
+
+	reverseIterator<iterator>& operator++()
+	{
+		--m_it;
+		return *this;
+	}
+
+	reverseIterator<iterator>& operator--()
+	{
+		++m_it;
+		return *this;
+	}
+
+	bool operator!=(const reverseIterator<iterator>& obj)
+	{
+		return m_it!=obj.m_it;
+	}
+
+	bool operator==(const reverseIterator<iterator>& obj)
+	{
+		return m_it == obj.m_it;
+	}
+
+private:
+	iterator m_it;
 };
 
 template<class K,class T,class KOfCompare>
@@ -89,11 +166,27 @@ class RBTree
 {
 public:
 	typedef RBTreeNode<T> node;
-	typedef Treeiterator<T,T&,T*>iterator;
-	typedef Treeiterator<T, const T&, const T*>const_iterator;
-
+	typedef Treeiterator<T,T&,T*> iterator;
+	typedef Treeiterator<T, const T&, const T*> const_iterator;
+	typedef  reverseIterator< iterator > reverse_iterator;
 	RBTree() :m_root(nullptr)
 	{}
+
+	reverse_iterator rbegin()
+	{
+		node* cur = m_root;
+		while (cur != nullptr && cur->m_right != nullptr)
+		{
+			cur = cur->m_right;
+		}
+		return reverse_iterator(iterator(cur));
+	}
+
+	reverse_iterator rend()
+	{
+		return reverse_iterator(iterator(nullptr));
+	}
+
 	iterator begin()
 	{
 		node* cur = m_root;
@@ -107,6 +200,7 @@ public:
 	{
 		return iterator(nullptr);
 	}
+
 	//传进来的是不平衡的结点的指针
 	void RotateL(node* parent)	//左旋
 	{

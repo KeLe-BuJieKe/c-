@@ -35,17 +35,45 @@ void testSet()
 	s.insert(1);
 	s.insert(5);
 	ZJ::set<int>::iterator it= s.begin();
+	//++it;
+	//++it;
+	//++it;
+	//++it;
+
+	//while (it != s.begin())
+	//{
+	//	cout << *it << endl;
+	//	--it;
+	//}
 	while (it != s.end())
 	{
 		cout << *it << endl;
 		++it;
 	}
 
+
+}
+
+void testReverse_iterator()
+{
+	ZJ::set<int>s;
+	s.insert(3);
+	s.insert(4);
+	s.insert(2);
+	s.insert(1);
+	s.insert(5);
+	ZJ::set<int>::reverse_iterator rit = s.rbegin();
+	while (rit != s.rend())
+	{
+		cout << *rit << endl;
+		++rit;
+	}
 }
 int main()
 {
-	testMap();
+	//testMap();
 	//testSet();
+	testReverse_iterator();
 	system("pause");
 	return 0;
 }
