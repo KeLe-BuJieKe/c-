@@ -206,4 +206,126 @@ D 以上都不对
 输出
 3
 
+//方法1：但是会超出内存限制
+#include<iostream>
+#include<vector>
+using namespace std;
+
+int FindIndex(const size_t &n)
+{
+    size_t m=2*n-1;
+    vector<vector<int>>vv(n,vector<int>(m,0));
+    
+    vv[0][0]=1;
+    
+    
+    for(size_t i=1;i<n;++i)
+    {
+        vv[i][0]= vv[i][2*i] = 1;  //将每一行的两边都置为1
+        for(size_t j=1;j<2*i;++j)
+        {
+            if(j == 1)
+            {
+                vv[i][j]=vv[i-1][j-1]+vv[i-1][j];
+            }
+            else if(j == 2*i-1)
+            {
+                vv[i][j]=vv[i-1][j-1]+vv[i-1][j-2];
+            }
+            else
+            {
+                vv[i][j]=vv[i-1][j]+vv[i-1][j-1]+vv[i-1][j-2];   
+            }
+        }
+    }
+    
+    for(size_t i=1;i<m;++i)
+    {
+        if(vv[n-1][i]%2 ==0)
+        {
+            return i+1;
+        }
+    }
+    return -1;
+        
+}
+
+int main()
+{
+    size_t n;
+    while(cin>>n)
+    {
+        int index=FindIndex(n);
+        cout<<index<<endl;
+    }
+    return 0;
+}
+
+
+//方法二：找规律
+include <iostream>
+using namespace std;
+int main()
+{
+    int n;
+    while(cin>>n)
+    {
+        if(n<=2)
+            cout<<-1<<endl;
+        else
+        {
+            if(n%2==1)
+                cout<<2<<endl;
+            else if(n%4==2)
+                cout<<4<<endl;
+            else if(n%4==0)
+                cout<<3<<endl;
+        }
+    }
+    return 0;
+}
+
+
+12.标题：二叉树的镜像 | 时间限制：1秒 | 内存限制：65536K | 语言限制： [Python, C++, C#, Java, Go, C, Javascript, Php, Python 3]
+【二叉树的镜像】操作给定的二叉树，将其变换为源二叉树的镜像。
+输入描述：
+二叉树的镜像定义：源二叉树 ↵ ⇥ 8↵
+                      ⇥ / ↵ ⇥ 6 10↵ ⇥ / 
+                       / ↵ ⇥5 7 9 11↵ 
+⇥镜像二叉树↵ ⇥ 8↵ ⇥ /
+         ↵ ⇥ 10 6↵ ⇥ / / ↵
+          ⇥11 9 7 5
+
+
+struct TreeNode {
+  int val;
+  struct TreeNode *left;
+  struct TreeNode *right;
+  TreeNode(int x) :
+  val(x), left(NULL), right(NULL) {
+  }
+};
+
+class Solution
+{
+public:
+    TreeNode* dfs(TreeNode* pRoot)
+    {
+        if (pRoot == nullptr)
+        {
+            return nullptr;
+        }
+        TreeNode* left = dfs(pRoot->left);
+        TreeNode* right = dfs(pRoot->right);
+        pRoot->left = right;
+        pRoot->right = left;
+        return pRoot;
+    }
+    void Mirror(TreeNode* pRoot)
+    {
+        dfs(pRoot);
+    }
+};
+
+
 */
