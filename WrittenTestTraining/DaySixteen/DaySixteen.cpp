@@ -222,36 +222,34 @@ D 2024
 输出
 3
 
+
+
 #include<iostream>
-#include<math.h>
+#include<cmath>
 using namespace std;
-int isPerfectNumber(int num)
-{
-    int count = 0;
-    for (int i = 2; i < num; ++i)
-    {
-        int temp = 0; //用来存储每个数的约数全部加起来
-        for (int j = 1; j <= sqrt(i); ++j)
-        {
-            if (i % j == 0)
-            {
-                temp += (j + i / j);
+
+int CountOfPerfectNumber(const int &n){
+    int count=0;
+    
+    for(int i=2;i<=n;++i){
+        int sum=0;
+        for(int j=1;j<sqrt(i);++j){  //求出所有的约数并加起来
+            if(i%j==0){
+                sum+=j;
             }
         }
-        temp -= i;//去除它的本身
-        if (temp == i)
-        {
+        if(sum==i){  //判断是否是完全数
             ++count;
         }
     }
     return count;
 }
-int main()
-{
-    int n;
-    while (cin >> n)
-    {
-        cout << isPerfectNumber(n) << endl;
+
+int main(){
+    int n,ret;
+    while(cin>>n){
+        ret=CountOfPerfectNumber(n);
+        cout<<ret<<endl;
     }
     return 0;
 }
