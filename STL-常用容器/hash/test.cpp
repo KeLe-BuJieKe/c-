@@ -22,18 +22,20 @@ void testhastTable()
 	h.insert(24);
 	h.insert(2);
 	h.insert(6);
+	ZJ::hashTable<int, int, com<int>>h1;
+	h1=h;
+	//h.insert(7);
+	//h.insert(1);
+	//h.insert(9);
+	//h.insert(10);
+	//h.insert(22);
+	//h.insert(21);
+	//h.insert(27);
+	//h.insert(0);
+	//
+	//h.erase(27);
+	//h.clear();
 
-	h.insert(7);
-	h.insert(1);
-	h.insert(9);
-	h.insert(10);
-	h.insert(22);
-	h.insert(21);
-	h.insert(27);
-	h.insert(0);
-
-	h.erase(27);
-	h.clear();
 }
 
 void testmap()
@@ -66,10 +68,20 @@ void testmap()
 	mp["9"] = "9";
 	mp["0"] = "0";
 	mp["10"] = "10";
-	for (auto &e : mp)
+	mp["10"] = "1";
+
+	auto it = mp.begin();
+	while (it != mp.end())
 	{
-		cout << e.first << ":" << e.second << endl;
+		//cout << it->first << endl;
+		printf("%s\n", (*it).first.c_str());
+		++it;
 	}
+
+	//for (auto &e : mp)
+	//{
+	//	cout << e.first << ":" << e.second << endl;
+	//}
 }
 
 void testset()
@@ -116,12 +128,12 @@ void testbloomfilter()
 }
 int main()
 {
-	//testhastTable();
+	testhastTable();
 	//testmap();
 	//testset();
 	//testbitmap();
 	//testbloomfilter();
-	ZJ::testSolution1();
+	//ZJ::testSolution1();
 	system("pause");
 	return 0;
 }

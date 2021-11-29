@@ -26,7 +26,7 @@ namespace ZJ
 	template<>
 	struct _hash<string>
 	{
-		const size_t& operator()(const string& key)
+		size_t operator()(const string& key)
 		{
 			size_t size = key.size();
 			size_t ret = 0;
@@ -77,6 +77,10 @@ namespace ZJ
 			return m_node != s.m_node;
 		}
 
+		bool operator==(const self& s)
+		{
+			return m_node == s.m_node;
+		}
 		self& operator++()
 		{
 			if (m_node->m_next != nullptr)	//如果当前的桶没有走完，则继续走这个桶内的元素
@@ -105,8 +109,9 @@ namespace ZJ
 	//K---key类型
 	//T---值类型
 	//KOfVal---返回T中的val
-	//Hash---哈希函数，针对不同类型，使用不同方法得到一个可以取模的key值
-	template<class K,class T,class KOfVal,class Hash=_hash<K>>
+	//Hash---哈希函数，针对不同类型，使用不同方法得到一个可以取模的key值  =_hash<K>
+	
+	template<class K,class T,class KOfVal,class Hash>
 	class hashTable
 	{
 	public:
@@ -118,6 +123,38 @@ namespace ZJ
 		{
 			m_table.resize(10, nullptr);
 		}
+
+		hashTable(const hashTable<K, T, KOfVal, Hash>& obj)
+		{
+			this->m_size = obj.m_size;
+			this->m_table.resize(obj.m_table.size());
+			for (size_t i = 0; i < obj.m_table.size(); ++i)
+			{
+				node* cur = obj.m_table[i];
+				while (cur != nullptr)
+				{
+					node* copy = new node(cur->m_data);
+					copy->m_next = m_table[i];
+					m_table[i] = copy;
+					cur = cur->m_next;
+				}
+			}
+		}
+
+		hashTable& operator =(const hashTable<K, T, KOfVal, Hash>& obj)
+		{
+			if (this == &obj)
+			{
+				return *this;
+			}
+			else
+			{
+				hashTable<K, T, KOfVal, Hash> temp(obj);
+				this->m_table.swap(temp.m_table);
+				std::swap(this->m_size, temp.m_size);
+			}
+		}
+
 		~hashTable()
 		{
 			clear();
