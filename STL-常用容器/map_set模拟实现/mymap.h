@@ -45,6 +45,10 @@ namespace ZJ
 			pair<iterator, bool>  ret = m_tree.insert(make_pair(key, V()));
 			return ret.first->second;
 		}
+		void erase(const K& key)
+		{
+			m_tree.erase(key);
+		}
 	private:
 		RBTree <K, pair<K, V>, MapKeyOfCompare>m_tree;
 	};

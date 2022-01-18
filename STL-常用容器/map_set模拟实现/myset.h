@@ -40,7 +40,10 @@ namespace ZJ
 		{
 			return m_tree.insert(k);
 		}
-
+		void erase(const K& key)
+		{
+			m_tree.erase(key);
+		}
 	private:
 		RBTree <K, K, SetKeyOfCompare>m_tree;
 	};

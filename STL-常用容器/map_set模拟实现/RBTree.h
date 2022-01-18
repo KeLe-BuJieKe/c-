@@ -1,5 +1,7 @@
 #pragma once
 #include<iostream>
+#include<stack>
+#include<assert.h>
 using namespace std;
 
 //节点的颜色
@@ -64,7 +66,7 @@ public:
 		{
 			node* cur = m_node;
 			node* parent = cur->m_parent;
-			while (parent != nullptr&&parent->m_right== cur )
+			while (parent != nullptr&& parent->m_right == cur )
 			{
 				cur = parent;
 				parent = parent->m_parent;
@@ -172,6 +174,57 @@ public:
 	RBTree() :m_root(nullptr)
 	{}
 
+	RBTree(const RBTree<K, T, KOfCompare>& obj)
+	{
+		m_root = copy(obj.m_root, nullptr);
+	}
+
+	RBTree<K, T, KOfCompare>& operator=(const RBTree<K, T, KOfCompare>& obj)
+	{
+		if (this != &obj)
+		{
+			RBTree<K, T, KOfCompare>temp = obj;	//调用拷贝构造
+			std::swap(temp.m_root, this->m_root);
+		}
+		return *this;
+	}
+
+	~RBTree() //利用后序来释放结点
+	{
+		if (m_root == nullptr)
+		{
+			return;
+		}
+		node* cur = m_root;
+		node* prev = nullptr;
+		stack<node*>s;
+		while (cur != nullptr || !s.empty())
+		{
+			while (cur != nullptr)	//一直把左结点放进栈中
+			{
+				s.push(cur);
+				cur = cur->m_left;
+			}
+			cur = s.top();
+			s.pop();
+			//cur->m_right==prev 这个判断很重要，防止访问完右结点时，来回横跳
+			if (cur->m_right == nullptr || cur->m_right == prev)
+			{
+				prev = cur;
+				cur->m_left = nullptr;
+				cur->m_parent = nullptr;
+				cur->m_right = nullptr;
+				delete cur;
+				cur = nullptr;
+			}
+			else
+			{
+				s.push(cur);
+				cur = cur->m_right;
+			}
+		}
+	}
+
 	reverse_iterator rbegin()
 	{
 		node* cur = m_root;
@@ -200,80 +253,7 @@ public:
 	{
 		return iterator(nullptr);
 	}
-
-	//传进来的是不平衡的结点的指针
-	void RotateL(node* parent)	//左旋
-	{
-		node* subR = parent->m_right;	//出问题的右结点
-		node* subRL = subR->m_left;		//出问题的右结点的左结点
-
-		parent->m_right = subRL;		//首先先将我们的parent的右指向subRL
-		if (subRL != nullptr)			//再将subRL的父亲指向parent结点，但这样要判断一下是否是空指针，如果subRL是空指针的话，
-										//那么解引用它会出现问题
-		{
-			subRL->m_parent = parent;
-		}
-
-		node* curParent = parent->m_parent;	//拿一个结点存储parent的父亲
-		parent->m_parent = subR;			//再使得parent的父亲指针指向它原先的右结点(subR)
-
-		subR->m_left = parent;				//在让subR的左指向parent
-		if (parent == m_root)				//在这里得判断一下它是否为根，如果parent为根的话，那么我们的根结点指针也得改变
-											//并且将subR的父亲指针置为空，此时subR此时为根结点
-		{
-			m_root = subR;
-			subR->m_parent = nullptr;
-		}
-		else
-		{									//如果不为头节点，那么我们只需要将subR的父亲指针指向parent之前的父亲结点
-			if (curParent->m_left == parent)
-			{
-				curParent->m_left = subR;
-			}
-			else
-			{
-				curParent->m_right = subR;
-			}
-			subR->m_parent = curParent;
-		}
-	}
-
-
-
-	void RotateR(node* parent)	//右旋
-	{
-		node* subL = parent->m_left;
-		node* subLR = subL->m_right;
-
-		parent->m_left = subLR;
-		if (subLR != nullptr)
-		{
-			subLR->m_parent = parent;
-		}
-
-		node* curParent = parent->m_parent;
-		parent->m_parent = subL;
-
-		subL->m_right = parent;
-		if (parent == m_root)
-		{
-			m_root = subL;
-			subL->m_parent = nullptr;
-		}
-		else
-		{
-			if (curParent->m_left == parent)
-			{
-				curParent->m_left = subL;
-			}
-			else
-			{
-				curParent->m_right = subL;
-			}
-			subL->m_parent = curParent;
-		}
-
-	}
+	
 
 
 	pair<iterator,bool> insert(const T& data)
@@ -407,79 +387,355 @@ public:
 		}
 	}
 
-	void _Inorder(node*& root)
+	//删除函数 删除看兄弟
+	bool erase(const K& key)
+	{
+		//用于遍历二叉树
+		node* parent = nullptr;
+		node* cur = m_root;
+		//用于标记实际的待删除结点及其父结点
+		node* delParentPos = nullptr;
+		node* delPos = nullptr;
+		while (cur != nullptr)
+		{
+			if (key < m_com(cur->m_data)) //所给key值小于当前结点的key值
+			{
+				//往该结点的左子树走
+				parent = cur;
+				cur = cur->m_left;
+			}
+			else if (key > m_com(cur->m_data)) //所给key值大于当前结点的key值
+			{
+				//往该结点的右子树走
+				parent = cur;
+				cur = cur->m_right;
+			}
+			else //找到了待删除结点
+			{
+				if (cur->m_left == nullptr) //待删除结点的左子树为空
+				{
+					if (cur == m_root) //待删除结点是根结点
+					{
+						m_root = m_root->m_right; //让根结点的右子树作为新的根结点
+						if (m_root)
+						{
+							m_root->m_parent = nullptr;
+							m_root->m_c = Colour::BLACK; //根结点为黑色
+						}
+						delete cur; //删除原根结点
+						return true;
+					}
+					else
+					{
+						delParentPos = parent; //标记实际删除结点的父结点
+						delPos = cur; //标记实际删除的结点
+					}
+					break; //进行红黑树的调整以及结点的实际删除
+				}
+				else if (cur->m_right == nullptr) //待删除结点的右子树为空
+				{
+					if (cur == m_root) //待删除结点是根结点
+					{
+						m_root = m_root->m_left; //让根结点的左子树作为新的根结点
+						if (m_root)
+						{
+							m_root->m_parent = nullptr;
+							m_root->m_c = Colour::BLACK; //根结点为黑色
+						}
+						delete cur; //删除原根结点
+						return true;
+					}
+					else
+					{
+						delParentPos = parent; //标记实际删除结点的父结点
+						delPos = cur; //标记实际删除的结点
+					}
+					break; //进行红黑树的调整以及结点的实际删除
+				}
+				else //待删除结点的左右子树均不为空
+				{
+					//替换法删除
+					//寻找待删除结点右子树当中key值最小的结点作为实际删除结点
+					node* minParent = cur;
+					node* minRight = cur->m_right;
+					while (minRight->m_left != nullptr)
+					{
+						minParent = minRight;
+						minRight = minRight->m_left;
+					}
+					cur->m_data = minRight->m_data; 
+					delParentPos = minParent; //标记实际删除结点的父结点
+					delPos = minRight; //标记实际删除的结点
+					break; //进行红黑树的调整以及结点的实际删除
+				}
+			}
+		}
+
+		if (delPos == nullptr) //delPos没有被修改过，说明没有找到待删除结点
+		{
+			return false;
+		}
+
+		//记录待删除结点及其父结点（用于后续实际删除）
+		node* del = delPos;
+		node* delP = delParentPos;
+
+		//调整红黑树 为了删除黑色结点后来恢复红黑树的性质
+		if (delPos->m_c == Colour::BLACK) //删除的是黑色结点
+		{
+			if (delPos->m_left != nullptr) //待删除结点有一个红色的左孩子（不可能是黑色）
+			{
+				delPos->m_left->m_c = Colour::BLACK; //将这个红色的左孩子变黑即可
+			}
+			else if (delPos->m_right != nullptr) //待删除结点有一个红色的右孩子（不可能是黑色）
+			{
+				delPos->m_right->m_c = Colour::BLACK; //将这个红色的右孩子变黑即可
+			}
+			else //待删除结点的左右均为空
+			{
+				while (delPos != m_root) //可能一直调整到根结点
+				{
+					if (delPos == delParentPos->m_left) //待删除结点是其父结点的左孩子
+					{
+						node* brother = delParentPos->m_right; //兄弟结点是其父结点的右孩子
+						//情况一：brother为红色
+						if (brother->m_c == Colour::RED)
+						{
+							delParentPos->m_c = Colour::RED;
+							brother->m_c = Colour::BLACK;
+							RotateL(delParentPos);
+							//需要继续处理
+							brother = delParentPos->m_right; //更新brother（否则在本循环中执行其他情况的代码会出错）
+						}
+
+						//情况二：brother为黑色，且其左右孩子都是黑色结点或者 一边为空一变为黑时
+						//甚至两边都为NIL，就是两边都为空时
+						if (((brother->m_left == nullptr) || (brother->m_left->m_c == Colour::BLACK))
+							&& ((brother->m_right == nullptr) || (brother->m_right->m_c == Colour::BLACK)))
+						{
+							brother->m_c = Colour::RED;
+							if (delParentPos->m_c == Colour::RED)
+							{
+								delParentPos->m_c = Colour::BLACK;
+								break;
+							}
+							else
+							{
+								//需要继续处理
+								delPos = delParentPos;
+								delParentPos = delPos->m_parent;
+							}
+						}
+						else
+						{
+							//情况三：brother为黑色，且其左孩子是红色结点，右孩子是黑色结点或为空
+							if ((brother->m_right == nullptr) || (brother->m_right->m_c == Colour::BLACK))
+							{
+								brother->m_left->m_c = Colour::BLACK;
+								brother->m_c = Colour::RED;
+								RotateR(brother);
+								//需要继续处理
+								brother = delParentPos->m_right; //更新brother（否则执行下面情况四的代码会出错）
+							}
+
+							//情况四：brother为黑色，且其右孩子是红色结点
+							brother->m_c = delParentPos->m_c;
+							delParentPos->m_c = Colour::BLACK;
+							brother->m_right->m_c = Colour::BLACK;
+							RotateL(delParentPos);
+							break; //情况四执行完毕后调整一定结束
+						}
+					}
+					else //delPos == delParentPos->m_right //待删除结点是其父结点的右孩子
+					{
+						node* brother = delParentPos->m_left; //兄弟结点是其父结点的左孩子
+						//情况一：brother为红色
+						if (brother->m_c == Colour::RED) //brother为红色
+						{
+							delParentPos->m_c = Colour::RED;
+							brother->m_c = Colour::BLACK;
+							RotateR(delParentPos);
+							//需要继续处理
+							brother = delParentPos->m_left; //更新brother（否则在本循环中执行其他情况的代码会出错）
+						}
+
+						//情况二：brother为黑色，且其左右孩子都是黑色结点或为空
+						if (((brother->m_left == nullptr) || (brother->m_left->m_c == Colour::BLACK))
+							&& ((brother->m_right == nullptr) || (brother->m_right->m_c == Colour::BLACK)))
+
+						{
+							brother->m_c = Colour::RED;
+							if (delParentPos->m_c == Colour::RED)
+							{
+								delParentPos->m_c = Colour::BLACK;
+								break;
+							}
+							else
+							{
+								//需要继续处理
+								delPos = delParentPos;
+								delParentPos = delPos->m_parent;
+							}
+						}
+						else
+						{
+							//情况三：brother为黑色，且其右孩子是红色结点，左孩子是黑色结点或为空
+							if ((brother->m_left == nullptr) || (brother->m_left->m_c == Colour::BLACK))
+							{
+								brother->m_right->m_c = Colour::BLACK;
+								brother->m_c = Colour::RED;
+								RotateL(brother);
+								//需要继续处理
+								brother = delParentPos->m_left; //更新brother（否则执行下面情况四的代码会出错）
+							}
+
+							//情况四：brother为黑色，且其左孩子是红色结点
+							brother->m_c = delParentPos->m_c;
+							delParentPos->m_c = Colour::BLACK;
+							brother->m_left->m_c = Colour::BLACK;
+							RotateR(delParentPos);
+							break; //情况四执行完毕后调整一定结束
+						}
+					}
+				}
+			}
+		}
+
+		//链接删除结点的孩子与删除结点父亲的链接关系
+		if (del->m_left == nullptr) //实际删除结点的左子树为空
+		{
+			if (del == delP->m_left) //实际删除结点是其父结点的左孩子
+			{
+				delP->m_left = del->m_right;
+				if (del->m_right != nullptr)
+				{
+					del->m_right->m_parent = delP;
+				}
+			}
+			else //实际删除结点是其父结点的右孩子
+			{
+				delP->m_right = del->m_right;
+				if (del->m_right != nullptr)
+				{
+					del->m_right->m_parent = delP;
+				}
+			}
+		}
+		else //实际删除结点的右子树为空
+		{
+			if (del == delP->m_left) //实际删除结点是其父结点的左孩子
+			{
+				delP->m_left = del->m_left;
+				if (del->m_left != nullptr)
+				{
+					del->m_left->m_parent = delP;
+				}
+			}
+			else //实际删除结点是其父结点的右孩子
+			{
+				delP->m_right = del->m_left;
+				if (del->m_left != nullptr)
+				{
+					del->m_left->m_parent = delP;
+				}
+			}
+		}
+
+		//最后将结点删除
+		delete del;
+		return true;
+	}
+
+private:
+	//传进来的是不平衡的结点的指针
+	void RotateL(node* parent)	//左旋
+	{
+		node* subR = parent->m_right;	//出问题的右结点
+		node* subRL = subR->m_left;		//出问题的右结点的左结点
+
+		parent->m_right = subRL;		//首先先将我们的parent的右指向subRL
+		if (subRL != nullptr)			//再将subRL的父亲指向parent结点，但这样要判断一下是否是空指针，如果subRL是空指针的话，
+										//那么解引用它会出现问题
+		{
+			subRL->m_parent = parent;
+		}
+
+		node* curParent = parent->m_parent;	//拿一个结点存储parent的父亲
+		parent->m_parent = subR;			//再使得parent的父亲指针指向它原先的右结点(subR)
+
+		subR->m_left = parent;				//在让subR的左指向parent
+		if (parent == m_root)				//在这里得判断一下它是否为根，如果parent为根的话，那么我们的根结点指针也得改变
+											//并且将subR的父亲指针置为空，此时subR此时为根结点
+		{
+			m_root = subR;
+			subR->m_parent = nullptr;
+		}
+		else
+		{									//如果不为头节点，那么我们只需要将subR的父亲指针指向parent之前的父亲结点
+			if (curParent->m_left == parent)
+			{
+				curParent->m_left = subR;
+			}
+			else
+			{
+				curParent->m_right = subR;
+			}
+			subR->m_parent = curParent;
+		}
+	}
+
+
+	void RotateR(node* parent)	//右旋
+	{
+		node* subL = parent->m_left;
+		node* subLR = subL->m_right;
+
+		parent->m_left = subLR;
+		if (subLR != nullptr)
+		{
+			subLR->m_parent = parent;
+		}
+
+		node* curParent = parent->m_parent;
+		parent->m_parent = subL;
+
+		subL->m_right = parent;
+		if (parent == m_root)
+		{
+			m_root = subL;
+			subL->m_parent = nullptr;
+		}
+		else
+		{
+			if (curParent->m_left == parent)
+			{
+				curParent->m_left = subL;
+			}
+			else
+			{
+				curParent->m_right = subL;
+			}
+			subL->m_parent = curParent;
+		}
+
+	}
+
+
+	node* copy(node* root, node* parent)
 	{
 		if (root == nullptr)
 		{
-			return;
+			return nullptr;
 		}
-		_Inorder(root->m_left);
-		cout << root->m_kv.first << " : " << root->m_kv.second << endl;
-		_Inorder(root->m_right);
-	}
-	void Inorder()
-	{
-		_Inorder(m_root);
-		cout << endl;
+		node* copyNode = new node(root->m_data);
+		copyNode->m_c = root->m_c;
+		copyNode->m_parent = parent;
+		copyNode->m_left = copy(root->m_left, copyNode);
+		copyNode->m_right = copy(root->m_right, copyNode);
+		return copyNode;
 	}
 
-	bool IsValidRBTree()
-	{
-		node* pRoot = m_root;
-		// 空树也是红黑树
-		if (nullptr == pRoot)
-		{
-			return true;
-		}
-		// 检测根节点是否满足情况
-		if (Colour::BLACK != pRoot->m_c)
-		{
-			cout << "违反红黑树性质二：根节点必须为黑色" << endl;
-			return false;
-		}
-		// 获取任意一条路径中黑色节点的个数
-		size_t blackCount = 0;
-		node* pCur = pRoot;
-		while (pCur!=nullptr)
-		{
-			if (Colour::BLACK == pCur->m_c)
-			{
-				blackCount++;
-			}
-			pCur = pCur->m_left;
-		}
-		// 检测是否满足红黑树的性质，k用来记录路径中黑色节点的个数
-		size_t k = 0;
-		return _IsValidRBTree(pRoot, k, blackCount);
-	}
 
-	bool _IsValidRBTree(node* pRoot, size_t k, const size_t blackCount)
-	{
-		//走到nullptr之后，判断k和black是否相等
-		if (nullptr == pRoot)
-		{
-			if (k != blackCount)
-			{
-				cout << "违反性质四：每条路径中黑色节点的个数必须相同" << endl;
-				return false;
-			}
-			return true;
-		}
-		// 统计黑色节点的个数
-		if (Colour::BLACK == pRoot->m_c)
-		{
-			k++;
-		}
-		// 检测当前节点与其双亲是否都为红色
-		node* pParent = pRoot->m_parent;
-		if (pParent && Colour::RED == pParent->m_c && Colour::RED == pRoot->m_c)
-		{
-			cout << "违反性质三：没有连在一起的红色节点" << endl;
-			return false;
-		}
-		return _IsValidRBTree(pRoot->m_left, k, blackCount) &&
-			_IsValidRBTree(pRoot->m_right, k, blackCount);
-	}
 private:
 	node* m_root;	//根结点
 	KOfCompare m_com;	//利用该对象调用仿函数来比较大小
