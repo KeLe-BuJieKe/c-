@@ -19,6 +19,7 @@ inline static void* SystemAlloc(size_t kpage)
 	{
 		throw std::bad_alloc();
 	}
+
 	return ptr;
 }
 
