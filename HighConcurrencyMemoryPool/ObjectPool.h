@@ -1,27 +1,7 @@
 #pragma once
-#include<iostream>
+#include"Common.h"
 
-#ifdef _WIN32
-#include<windows.h>
-#else
-
-#endif 
-
-// 直接去堆上按页申请空间，这里设置每页8kb
-inline static void* SystemAlloc(size_t kpage)
-{
-#ifdef _WIN32
-	void* ptr = VirtualAlloc(0, kpage << 13, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-#else
-	// linux下brk mmap等 
-#endif
-	if (ptr == nullptr)
-	{
-		throw std::bad_alloc();
-	}
-
-	return ptr;
-}
+inline static void* SystemAlloc(size_t kpage);//函数声明
 
 template<class T>
 class ObjectPool
@@ -85,67 +65,3 @@ private:
 	size_t _remainBytes; //大块内存存在切分过程中的剩余字节数
 };
 
-#include<vector>
-#include<ctime>
-struct TreeNode
-{
-	int _val;
-	TreeNode* _left;
-	TreeNode* _right;
-
-	TreeNode()
-		:_val(0)
-		, _left(nullptr)
-		, _right(nullptr)
-	{}
-};
-
-void TestObjectPool()
-{
-	// 申请释放的轮次
-	const size_t Rounds = 5;
-
-	// 每轮申请释放多少次
-	const size_t N = 100000;
-
-	std::vector<TreeNode*> v1;
-	v1.reserve(N);
-
-	size_t begin1 = clock();
-	for (size_t j = 0; j < Rounds; ++j)
-	{
-		for (int i = 0; i < N; ++i)
-		{
-			v1.push_back(new TreeNode);
-		}
-		for (int i = 0; i < N; ++i)
-		{
-			delete v1[i];
-		}
-		v1.clear();
-	}
-
-	size_t end1 = clock();
-
-	std::vector<TreeNode*> v2;
-	v2.reserve(N);
-
-	ObjectPool<TreeNode> TNPool;
-	size_t begin2 = clock();
-	for (size_t j = 0; j < Rounds; ++j)
-	{
-		for (int i = 0; i < N; ++i)
-		{
-			v2.push_back(TNPool.New());
-		}
-		for (int i = 0; i < N; ++i)
-		{
-			TNPool.Delete(v2[i]);
-		}
-		v2.clear();
-	}
-	size_t end2 = clock();
-
-	std::cout << "new cost time:" << end1 - begin1 << std::endl;
-	std::cout << "object pool cost time:" << end2 - begin2 << std::endl;
-}
