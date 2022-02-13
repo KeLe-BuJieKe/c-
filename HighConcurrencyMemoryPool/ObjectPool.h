@@ -3,6 +3,7 @@
 
 inline static void* SystemAlloc(size_t kpage);//º¯ÊıÉùÃ÷
 
+
 template<class T>
 class ObjectPool
 {
