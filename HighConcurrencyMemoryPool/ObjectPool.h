@@ -65,4 +65,3 @@ private:
 	void* _freeList; //还回来过程中链接的自由链表的头指针
 	size_t _remainBytes; //大块内存存在切分过程中的剩余字节数
 };
-
