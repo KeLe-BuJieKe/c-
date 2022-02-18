@@ -160,7 +160,7 @@ int main()
 {
 	testConcurrentAlloc();
 	//TestMultiThread();
-	//BigAlloc();
+	BigAlloc();
 	system("pause");
 
 	return 0;
