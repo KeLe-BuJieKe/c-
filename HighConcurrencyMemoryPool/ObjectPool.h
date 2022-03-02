@@ -16,6 +16,7 @@ public:
 
 	T* New()
 	{
+    std::unique_lock<std::mutex>lock(mtx);
 		T* obj = nullptr;
 		if (this->_freeList != nullptr) //如果释放链表里不为空，那么我们直接使用释放链表里的空间，否则就直接继续切分
 		{
@@ -53,6 +54,7 @@ public:
 
 	void Delete(T* obj)
 	{
+    std::unique_lock<std::mutex>lock(mtx);
 		obj->~T(); //调用析构函数，防止像string类型的对象内部含有堆开辟的空间没有去释放，造成内存泄漏等问题
 		*(reinterpret_cast<void**>(obj)) = this->_freeList;
 		this->_freeList = obj;
@@ -64,4 +66,5 @@ private:
 	char* _memory;  //指向的大块内存的首地址
 	void* _freeList; //还回来过程中链接的自由链表的头指针
 	size_t _remainBytes; //大块内存存在切分过程中的剩余字节数
+  std::mutex mtx;
 };
