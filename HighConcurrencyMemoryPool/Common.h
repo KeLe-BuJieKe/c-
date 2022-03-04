@@ -95,7 +95,7 @@ public:
 
 	void PopRange(void*& start, void*& end, const size_t num)
 	{
-		assert(num >= _size);
+		assert(num <= _size);
 		start = _freeList;
 		end = start;
 
