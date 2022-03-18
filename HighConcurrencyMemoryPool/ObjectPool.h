@@ -66,5 +66,5 @@ private:
 	char* _memory;  //指向的大块内存的首地址
 	void* _freeList; //还回来过程中链接的自由链表的头指针
 	size_t _remainBytes; //大块内存存在切分过程中的剩余字节数
-  std::mutex mtx;
+  std::mutex mtx; //定长内存池锁
 };
