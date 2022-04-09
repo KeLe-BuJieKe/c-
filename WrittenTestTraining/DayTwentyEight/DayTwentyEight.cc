@@ -30,6 +30,8 @@ F 5.3
 A 错
 B 对
 
+解析：操作系统存在虚拟内存，能够将一部分优先级较低的程序保存到系统硬盘
+
 
 4.通常所说的"存储保护"的基本含义是（ C ）。
 A 防止存储器硬件受损
@@ -105,17 +107,13 @@ public:
             if(arr[evenindex]%2==0)  //这一步将在偶数位上来找奇数
             {
                 evenindex+=2;
-                continue;
             }
             
             if(arr[oddindex]%2==1)   //这里是奇数位来找偶数
             {
                 oddindex+=2;
-                continue;
             }
             swap(arr[oddindex],arr[evenindex]);  //最后将两个数的位置进行交换
-            oddindex+=2;
-            evenindex+=2;
         }
     }
 };
