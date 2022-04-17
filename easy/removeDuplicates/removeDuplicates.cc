@@ -12,6 +12,7 @@
 S 仅由小写英文字母组成。
 */
 
+
 class Solution {
 public:
     string removeDuplicates(string s) {
