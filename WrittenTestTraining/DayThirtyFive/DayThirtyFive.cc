@@ -168,7 +168,9 @@ int main()
 输入
 Joe,Kewell,Leon\nJoe\n"Letendre, Bruce",Joe,"Quan, William"\nWilliam
 输出
-Ignore\nImportant!
+Ignore
+Important!
+
 
 #include<iostream>
 #include<string>
