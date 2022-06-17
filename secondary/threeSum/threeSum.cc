@@ -15,8 +15,46 @@
 输出：[]
 */
 
+//方法一：
+/*思路：利用dfs深搜来得到所有不同的能组成的三数组合，缺点：会超时*/
+class Solution {
+public:
+    void _threeSum(std::vector<int>& nums, std::vector<std::vector<int>>& ret, std::vector<int>& path, std::vector<bool> flag, int start) {
+        if (path.size() == 3) {
+            if (path[0] + path[1] + path[2] == 0) {
+                ret.push_back(path);
+            }
+            return;
+        }
+        int size = static_cast<int>(nums.size());
+        for (int i = start; i < size; ++i) {
+            if (flag[i] == true || (i > 0 && nums[i] == nums[i -1] && flag[i - 1] == false)) {
+                continue;
+            }
+            flag[i] = true;
+            path.push_back(nums[i]);
+            _threeSum(nums, ret, path, flag, i + 1);
+            path.pop_back();
+            flag[i] = false;
+        }
+    }
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        int size = static_cast<int>(nums.size());
+        if (size < 3) {
+            return std::vector<std::vector<int>>();
+        }
+        std::sort(nums.begin(), nums.end()); 
+        std::vector<bool> flag(size, false);
+        std::vector<std::vector<int>> ret;
+        std::vector<int> path;
+        _threeSum(nums, ret, path, flag, 0);
+        return ret;
+    }
+};
 
-//利用排序+双指针
+
+//方法二：利用排序+双指针
+
 class Solution {
 public:
     vector<vector<int>> threeSum(vector<int>& nums) {
